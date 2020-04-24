@@ -1,0 +1,69 @@
+@Library('my-shared-library') _
+
+import org.demo.message
+
+pipeline {
+    agent any 
+    environment {
+        APP_NAME = 'springboot'
+        CONTAINER_PORT = '8000'
+        HOST_PORT = '8000'
+        GIT_CRED_ID = 'github-ssh-key'
+        REPO_URL = 'git@github.com:kamalverma-ttn/gradle-springboot.git'
+    }
+    
+    stages {
+        
+        stage('Git Checkout') {
+            agent any 
+            steps {
+                echo 'Building Assets...'
+                script {
+                    gitCheckout(branch: '*/master', cred_id: GIT_CRED_ID, scm_url: REPO_URL)
+                }
+	           sh "ls -l"
+            }
+        }
+        
+        stage('Gradle Build') {
+            agent any
+            steps {
+                script {
+                    utility.createDockerfile()
+                    utility.createSonarFile()
+                    gradleBuild()
+                }
+                sh "ls -l"
+            }
+        }
+        
+        stage('Package Code') {
+            agent any
+            steps {
+                script {
+                    packageCode()
+                }
+            }
+        }
+        
+        stage('Deploy App') {
+            agent any
+            steps {
+                script {
+                    deployApp()
+                }
+            }
+        }
+
+        stage('Success Message') {
+            agent any
+            steps {
+                script {
+                    def msg = new org.demo.message()
+                    msg.print()
+
+                }
+            }
+        }
+    }
+}
