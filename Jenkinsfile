@@ -4,9 +4,11 @@ pipeline {
 	stages {
 	stage ('testing webhook') {
 		steps {
+			script {
 			if (env.BRANCH_NAME == "master" || env.BRANCH_NAME == "develop" ) {
 				properties([pipelineTriggers([githubPush()])])
 			}
+		}
 		}
 	}		
     	stage('Fetching Code') {
