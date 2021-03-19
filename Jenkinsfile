@@ -1,3 +1,4 @@
+properties([pipelineTriggers([githubPush()])])
 // Pipeline starts from here 
 pipeline {
 	agent any
