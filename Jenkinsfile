@@ -1,4 +1,4 @@
-properties([pipelineTriggers([githubPush()])])
+properties([pipelineTriggers([githubPush(develop, master)])])
 // Pipeline starts from here 
 pipeline {
 	agent any
